@@ -1,0 +1,1 @@
+- [Escopo real do VERDANT CONTROL](verdant-control-scope.md) — o novo SaaS deve ser operacional, com três critérios comerciais obrigatórios e validação humana.

@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "VERDANT AMBIENTAL"
+description = "Site institucional B2B de consultoria ambiental, com serviços, equipe ilustrativa, conteúdos e apresentação comercial demonstrativa do VERDANT CONTROL."
+version = "1.0.0"
+id = "artifacts/verdant"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22832
+
+[services.development]
+run = "pnpm --filter @workspace/verdant run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/verdant", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/verdant/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22832"
+BASE_PATH = "/"
