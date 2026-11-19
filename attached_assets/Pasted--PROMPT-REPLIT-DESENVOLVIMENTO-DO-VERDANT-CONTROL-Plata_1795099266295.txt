@@ -1,0 +1,905 @@
+# PROMPT REPLIT — DESENVOLVIMENTO DO VERDANT CONTROL
+## Plataforma SaaS de Gestão Ambiental Inteligente com Inteligência Artificial
+
+Quero desenvolver uma plataforma SaaS chamada **VERDANT CONTROL**, vinculada à marca VERDANT AMBIENTAL, para gestão ambiental empresarial, controle de obrigações legais, licenciamento, gestão documental, resíduos e automação de processos ambientais.
+
+ATENÇÃO: Não quero uma simples interface demonstrativa. Quero desenvolver um sistema real, com banco de dados, autenticação, armazenamento de arquivos, cadastros funcionais, controle de vencimentos, dashboards, permissões e estrutura preparada para integração com inteligência artificial.
+
+O objetivo é transformar o software em um produto comercializável por assinatura para indústrias e empresas de diferentes segmentos.
+
+Todo o sistema deverá ser desenvolvido em português brasileiro.
+
+---
+
+# 1. CONCEITO DO SISTEMA
+
+O VERDANT CONTROL deverá funcionar como um consultor ambiental digital, centralizando as informações ambientais de uma empresa e orientando os usuários sobre o que precisam fazer, quais documentos devem apresentar e quais obrigações precisam cumprir.
+
+O sistema deverá:
+
+- Centralizar todos os documentos ambientais.
+- Interpretar documentos utilizando inteligência artificial.
+- Identificar obrigações legais e condicionantes.
+- Controlar licenças, autorizações e vencimentos.
+- Monitorar documentos e obrigações.
+- Orientar os usuários sobre as alimentações necessárias.
+- Controlar MTR, CDF e rastreabilidade de resíduos.
+- Organizar informações do IBAMA, CTF/APP, RAPP e TCFA.
+- Criar tarefas e planos de ação.
+- Enviar notificações automáticas por e-mail.
+- Gerar relatórios gerenciais.
+- Manter histórico de alterações e evidências.
+- Permitir acompanhamento por consultorias ambientais externas.
+
+A plataforma deve ser desenvolvida com arquitetura multiempresa (multi-tenant), permitindo que diferentes empresas utilizem o sistema sem compartilhar informações entre si.
+
+# 2. IDENTIDADE VISUAL
+
+Manter a identidade visual da VERDANT AMBIENTAL.
+
+Paleta:
+- Verde principal: #39845B.
+- Verde escuro: #194D36.
+- Verde claro: #B7DCC3.
+- Branco: #FFFFFF.
+- Fundo: #F5F9F6.
+- Cinza: #58645D.
+
+Interface:
+- Profissional.
+- Moderna.
+- Minimalista.
+- Corporativa.
+- Responsiva.
+- Fácil de utilizar.
+- Predominância de branco e verde-claro.
+
+Utilizar:
+- Sidebar lateral.
+- Ícones Lucide.
+- Cards de indicadores.
+- Gráficos.
+- Tabelas com filtros.
+- Modais.
+- Menus contextuais.
+- Notificações visuais.
+- Indicadores de situação.
+
+Evitar excesso de informações na tela.
+
+# 3. ARQUITETURA DO SISTEMA
+
+Utilizar preferencialmente:
+
+Frontend:
+- React.
+- TypeScript.
+- Tailwind CSS.
+- React Router.
+- Lucide Icons.
+
+Backend:
+- Node.js.
+- API REST.
+- PostgreSQL.
+- Prisma ORM.
+
+Autenticação:
+- Login por e-mail e senha.
+- Senhas armazenadas com hash seguro.
+- Recuperação de senha.
+- Sessões seguras.
+- Controle de permissões.
+
+Armazenamento:
+- Serviço de armazenamento compatível com S3.
+- Organização por empresa e categoria documental.
+- URLs privadas e assinadas para download.
+
+IA:
+- Integração preparada com API de modelos de linguagem.
+- Leitura de PDF.
+- OCR para documentos digitalizados.
+- Extração estruturada de informações.
+- Pesquisa semântica documental.
+- Respostas fundamentadas nos documentos cadastrados.
+
+Automação:
+- Preparar integração com n8n ou serviço equivalente.
+- Processamento de tarefas em segundo plano.
+- Agendamento de notificações.
+- Registro de execução e erros.
+
+IMPORTANTE: Não armazenar documentos apenas no navegador ou em memória temporária. Os arquivos precisam ser persistidos em armazenamento real.
+
+Todas as operações devem validar a empresa à qual o usuário pertence. Um usuário de uma empresa jamais poderá acessar documentos, registros ou dados de outra empresa.
+
+# 4. ESTRUTURA PRINCIPAL DO SISTEMA
+
+Criar uma sidebar com os seguintes menus:
+
+1. Dashboard.
+2. Documentos.
+3. Licenças e Autorizações.
+4. Condicionantes Ambientais.
+5. Obrigações Legais.
+6. Gestão de Resíduos.
+7. IBAMA e CTF/APP.
+8. Monitoramentos Ambientais.
+9. Auditorias e Inspeções.
+10. Planos de Ação.
+11. Calendário Ambiental.
+12. Relatórios.
+13. Assistente IA.
+14. Configurações.
+
+No cabeçalho:
+- Nome da empresa ativa.
+- Unidade selecionada.
+- Central de notificações.
+- Perfil do usuário.
+- Ajuda.
+
+# 5. DASHBOARD PRINCIPAL
+
+Criar um dashboard que apresente a situação ambiental da empresa.
+
+Indicadores:
+
+- Licenças vigentes.
+- Licenças próximas do vencimento.
+- Condicionantes pendentes.
+- Obrigações legais próximas do prazo.
+- Documentos vencidos.
+- Documentos pendentes.
+- MTR sem CDF correspondente.
+- Planos de ação em aberto.
+- Auditorias programadas.
+
+Criar gráficos:
+- Evolução das pendências ambientais.
+- Situação das obrigações por categoria.
+- Documentos por tipo.
+- Resíduos por período.
+- Índice de conformidade ambiental.
+
+Criar seção "Atenção necessária", apresentando as atividades que exigem ação imediata.
+
+Exemplos:
+- Licença de Operação vence em 60 dias.
+- Condicionante sem evidência de atendimento.
+- MTR aguardando CDF.
+- RAPP com período de entrega próximo.
+- Documento obrigatório ainda não enviado.
+
+Os indicadores devem utilizar dados reais cadastrados. Criar dados demonstrativos apenas para ambiente de demonstração, identificando-os claramente.
+
+# 6. CADASTRO DA EMPRESA E UNIDADES
+
+Criar módulo para cadastro de empresas e estabelecimentos.
+
+Dados:
+- Razão social.
+- Nome fantasia.
+- CNPJ.
+- CNAE.
+- Endereço.
+- Município.
+- Estado.
+- CEP.
+- Coordenadas geográficas.
+- Atividade principal.
+- Atividades secundárias.
+- Porte.
+- Número de funcionários.
+- Órgão ambiental competente.
+- Responsável ambiental.
+- Responsável legal.
+
+Permitir múltiplas unidades por empresa.
+
+Cada unidade deverá possuir seus próprios documentos, licenças, obrigações, condicionantes, resíduos e indicadores.
+
+Permitir cadastrar os órgãos ambientais competentes conforme a localização e a natureza da atividade, como FEPAM, órgãos municipais, IAT e IBAMA.
+
+# 7. GESTÃO DOCUMENTAL INTELIGENTE
+
+Este será um dos módulos mais importantes.
+
+Criar um ambiente para upload, organização e consulta de documentos.
+
+Categorias:
+- Licenças ambientais.
+- Autorizações.
+- PGRS.
+- PGRCC.
+- ART.
+- Laudos técnicos.
+- Relatórios ambientais.
+- MTR.
+- CDF.
+- Documentos IBAMA.
+- Documentos de fornecedores.
+- Certificados.
+- Comprovantes.
+- Plantas e mapas.
+- Outros.
+
+Cada documento deverá possuir:
+- Nome.
+- Categoria.
+- Empresa.
+- Unidade.
+- Número do documento.
+- Data de emissão.
+- Data de validade.
+- Responsável.
+- Arquivo original.
+- Histórico de versões.
+- Observações.
+- Status.
+
+Permitir:
+- Upload de PDF.
+- Upload de imagens.
+- Upload de planilhas.
+- Upload de arquivos compactados, quando aplicável.
+- Download.
+- Visualização.
+- Substituição de arquivos.
+- Histórico de alterações.
+- Filtros por categoria, período e situação.
+
+## Inteligência artificial documental
+
+Quando um usuário enviar um documento, a IA deverá:
+
+1. Identificar o tipo de documento.
+2. Extrair informações relevantes.
+3. Identificar número e órgão emissor.
+4. Extrair datas de emissão e validade.
+5. Identificar obrigações e condicionantes.
+6. Identificar frequências e prazos.
+7. Sugerir categoria documental.
+8. Identificar documentos complementares necessários.
+9. Apresentar as informações extraídas para validação humana.
+
+Não cadastrar automaticamente informações legais críticas sem aprovação do usuário.
+
+A IA deverá preservar a referência ao documento original e permitir que o usuário confira de onde cada informação foi extraída.
+
+Criar status:
+- Aguardando análise.
+- Analisado pela IA.
+- Aguardando validação.
+- Validado.
+- Rejeitado.
+- Vencido.
+
+# 8. CONTROLE DE LICENÇAS E AUTORIZAÇÕES
+
+Criar módulo específico para:
+
+- Licença Prévia.
+- Licença de Instalação.
+- Licença de Operação.
+- Autorização Ambiental.
+- Outorga.
+- Alvarás ambientais.
+- Outras licenças.
+
+Cada licença deverá conter:
+
+- Número.
+- Tipo.
+- Órgão emissor.
+- Unidade vinculada.
+- Data de emissão.
+- Data de vencimento.
+- Atividade licenciada.
+- Capacidade autorizada.
+- Área licenciada.
+- Parâmetros operacionais.
+- Arquivo original.
+- Responsável pelo acompanhamento.
+
+Criar indicadores:
+- Vigente.
+- Próxima do vencimento.
+- Vencida.
+- Em renovação.
+- Em análise.
+
+Permitir cadastrar o processo de renovação e acompanhar suas etapas.
+
+# 9. CONDICIONANTES AMBIENTAIS
+
+Criar módulo para controle individualizado das condicionantes das licenças.
+
+Cada condicionante deverá possuir:
+
+- Número ou identificação.
+- Texto integral da exigência.
+- Licença vinculada.
+- Periodicidade.
+- Prazo.
+- Data de referência.
+- Responsável.
+- Evidências necessárias.
+- Arquivos anexados.
+- Histórico de cumprimento.
+- Status.
+
+Exemplos:
+- Apresentar relatório de monitoramento semestral.
+- Encaminhar comprovantes de destinação de resíduos.
+- Realizar análise de efluentes.
+- Apresentar relatório de ruído ambiental.
+- Manter registros de manutenção.
+
+A IA deverá ler a licença e sugerir a separação de cada condicionante em registros individuais.
+
+Permitir transformar condicionantes em tarefas automáticas e recorrentes.
+
+Não presumir que todas as condicionantes têm periodicidade fixa. A periodicidade deverá ser extraída do texto e confirmada pelo usuário.
+
+# 10. OBRIGAÇÕES LEGAIS
+
+Criar módulo para controle de obrigações ambientais.
+
+Cada obrigação deverá conter:
+
+- Nome.
+- Descrição.
+- Fundamentação legal.
+- Órgão responsável.
+- Aplicabilidade.
+- Periodicidade.
+- Prazo.
+- Documentos exigidos.
+- Responsável interno.
+- Evidência de cumprimento.
+- Status.
+
+Criar biblioteca de obrigações por segmento empresarial e atividade.
+
+A IA deverá auxiliar na identificação de requisitos aplicáveis a partir de:
+- CNAE.
+- Atividades desenvolvidas.
+- Localização.
+- Porte.
+- Licenças existentes.
+- Características operacionais.
+
+IMPORTANTE: Não declarar uma obrigação legal como aplicável apenas por inferência da IA. Exibir a justificativa, a fonte normativa e solicitar validação técnica.
+
+Preparar estrutura para atualização periódica da legislação.
+
+# 11. GESTÃO DE RESÍDUOS
+
+Criar módulo de controle de resíduos.
+
+Cadastro:
+- Tipo de resíduo.
+- Código.
+- Classificação.
+- Classe.
+- Origem.
+- Quantidade.
+- Unidade de medida.
+- Acondicionamento.
+- Transportador.
+- Destinador.
+- Tecnologia de destinação.
+- Periodicidade de geração.
+
+Criar módulos específicos para:
+
+## MTR
+- Número do manifesto.
+- Data de emissão.
+- Resíduo.
+- Quantidade.
+- Transportador.
+- Destinador.
+- Status.
+- Documento original.
+
+## CDF
+- Número.
+- Data de emissão.
+- Destinador.
+- Resíduos vinculados.
+- Quantidades.
+- MTR relacionado.
+- Documento original.
+
+## Conferência inteligente
+
+A IA deverá comparar MTR e CDF e identificar:
+- MTR sem CDF.
+- Divergência de quantidade.
+- Resíduos incompatíveis.
+- Destinador diferente.
+- Documentos duplicados.
+- Informações incompletas.
+
+Criar indicadores de rastreabilidade.
+
+Permitir importar arquivos e planilhas para facilitar o cadastramento em lote.
+
+Não considerar que um MTR e um CDF sempre possuem correspondência individual. Permitir relações de um para vários e de vários para um, conforme os registros reais.
+
+# 12. IBAMA, CTF/APP, RAPP E TCFA
+
+Criar módulo específico para obrigações federais.
+
+## CTF/APP
+- Número de cadastro.
+- Atividades cadastradas.
+- Situação cadastral.
+- Histórico.
+- Documentos relacionados.
+
+## RAPP
+- Ano de referência.
+- Status de preenchimento.
+- Informações necessárias.
+- Data de transmissão.
+- Recibo.
+- Arquivos relacionados.
+
+## TCFA
+- Trimestre.
+- Enquadramento.
+- Porte.
+- Potencial poluidor.
+- Valor calculado.
+- Vencimento.
+- Pagamento.
+- Comprovante.
+
+Criar alertas e tarefas.
+
+A IA poderá auxiliar na preparação das informações, mas valores e declarações deverão ser conferidos antes de qualquer transmissão ou pagamento.
+
+# 13. MONITORAMENTOS AMBIENTAIS
+
+Criar módulo para monitoramentos periódicos.
+
+Tipos:
+- Ruído ambiental.
+- Vibração.
+- Efluentes.
+- Emissões atmosféricas.
+- Qualidade da água.
+- Qualidade do ar.
+- Monitoramentos específicos de licenças.
+
+Cada monitoramento deverá conter:
+- Tipo.
+- Parâmetro.
+- Unidade de medida.
+- Limite de referência.
+- Resultado.
+- Data da coleta.
+- Laboratório ou responsável.
+- Relatório.
+- ART, quando aplicável.
+- Próxima avaliação.
+
+Criar gráficos de evolução dos resultados.
+
+Permitir comparar resultados com limites cadastrados, indicando claramente a fonte e a versão do limite utilizado.
+
+Não criar limites legais fictícios.
+
+# 14. AUDITORIAS E INSPEÇÕES
+
+Criar módulo para auditorias ambientais.
+
+Funcionalidades:
+- Criar auditoria.
+- Definir escopo.
+- Criar checklist.
+- Registrar conformidades.
+- Registrar não conformidades.
+- Inserir fotografias.
+- Anexar documentos.
+- Definir responsáveis.
+- Criar planos de ação.
+- Emitir relatório.
+
+Permitir modelos de auditoria configuráveis.
+
+# 15. PLANOS DE AÇÃO
+
+Criar módulo para gestão de ações corretivas e preventivas.
+
+Campos:
+- Identificação.
+- Origem.
+- Descrição.
+- Causa.
+- Ação proposta.
+- Responsável.
+- Prazo.
+- Prioridade.
+- Evidência.
+- Status.
+- Histórico.
+
+Status:
+- Aberta.
+- Em andamento.
+- Aguardando evidência.
+- Em validação.
+- Concluída.
+- Atrasada.
+
+Criar filtros e indicadores de atraso.
+
+# 16. CALENDÁRIO AMBIENTAL
+
+Criar calendário com visualização:
+- Mensal.
+- Semanal.
+- Lista de tarefas.
+
+Exibir:
+- Vencimentos documentais.
+- Condicionantes.
+- Obrigações legais.
+- Auditorias.
+- Monitoramentos.
+- Tarefas.
+- Renovação de licenças.
+
+Permitir filtrar por unidade, responsável e categoria.
+
+# 17. SISTEMA DE ALERTAS AUTOMÁTICOS POR E-MAIL
+
+Esta funcionalidade é obrigatória e estratégica.
+
+O usuário deverá conseguir configurar individualmente os alertas de cada documento ou obrigação.
+
+Exemplo:
+
+Documento: Licença de Operação.
+Vencimento: 30/06/2027.
+
+Configuração:
+- Enviar alerta 120 dias antes.
+- Enviar alerta 90 dias antes.
+- Enviar alerta 60 dias antes.
+- Enviar alerta 30 dias antes.
+- Enviar alerta 15 dias antes.
+- Enviar alerta 7 dias antes.
+
+O usuário também poderá definir:
+- Antecedências personalizadas.
+- Destinatários.
+- Cópias.
+- Frequência.
+- Responsável.
+- Assunto.
+- Mensagem complementar.
+
+Criar uma interface simples para configurar essas regras.
+
+## Funcionamento
+
+O sistema deverá executar verificações automáticas diariamente.
+
+Quando uma data de alerta for atingida:
+1. Identificar o documento.
+2. Identificar os destinatários.
+3. Gerar o e-mail.
+4. Enviar a mensagem.
+5. Registrar o envio.
+6. Armazenar histórico.
+7. Evitar envio duplicado.
+
+Criar modelos de e-mail profissionais.
+
+Exemplo:
+
+Assunto: Alerta de vencimento – Licença de Operação.
+
+"Prezados,
+
+Informamos que o documento Licença de Operação nº XXX, vinculado à unidade XXX, possui vencimento previsto para 30/06/2027.
+
+Faltam 60 dias para o vencimento.
+
+Solicitamos que sejam iniciadas as providências necessárias para renovação.
+
+VERDANT CONTROL."
+
+Preparar integração com SMTP ou provedor de e-mail transacional.
+
+Criar uma tela de histórico de notificações com:
+- Data e hora.
+- Documento.
+- Destinatário.
+- Tipo de alerta.
+- Status de envio.
+- Erros.
+
+IMPORTANTE: Não basta exibir notificações na interface. O sistema deverá possuir arquitetura real de envio de e-mails em segundo plano.
+
+# 18. ASSISTENTE DE INTELIGÊNCIA ARTIFICIAL
+
+Criar um assistente chamado:
+
+**VERDANT AI**
+
+O assistente deverá funcionar como um consultor ambiental digital, com acesso controlado aos documentos e informações da empresa.
+
+Exemplos de perguntas:
+
+- Quando vence nossa Licença de Operação?
+- Quais condicionantes estão pendentes?
+- Quais documentos faltam para renovação da LO?
+- Existe algum MTR sem CDF?
+- Quais obrigações vencem neste mês?
+- O que precisamos apresentar ao órgão ambiental?
+- Quais documentos precisam ser atualizados?
+- Resuma nossa licença ambiental.
+- Gere um checklist para auditoria ambiental.
+- Quais são nossas principais pendências?
+
+## Requisitos do VERDANT AI
+
+1. Utilizar os dados reais da empresa autenticada.
+2. Respeitar permissões de acesso.
+3. Consultar documentos cadastrados.
+4. Responder com referências aos documentos.
+5. Identificar quando não possui informações suficientes.
+6. Não inventar leis, prazos ou obrigações.
+7. Diferenciar informação extraída de documento e interpretação da IA.
+8. Informar quando determinada conclusão exige validação técnica.
+
+Criar interface de chat moderna, com histórico de conversas.
+
+Preparar integração com API de inteligência artificial.
+
+Não colocar chaves de API no frontend.
+
+# 19. RELATÓRIOS
+
+Criar módulo para emissão de relatórios:
+
+- Relatório geral de conformidade ambiental.
+- Relatório de licenças.
+- Relatório de condicionantes.
+- Relatório de documentos vencidos.
+- Relatório de resíduos.
+- Relatório de MTR e CDF.
+- Relatório de obrigações legais.
+- Relatório de planos de ação.
+- Relatório de monitoramentos.
+- Relatório de pendências.
+
+Permitir exportação em PDF e Excel.
+
+Criar relatórios com identidade visual da VERDANT CONTROL.
+
+# 20. USUÁRIOS E PERMISSÕES
+
+Criar níveis de acesso:
+
+**Administrador da plataforma**
+- Gerencia todas as empresas.
+- Gerencia planos.
+- Gerencia usuários.
+- Visualiza indicadores administrativos.
+
+**Administrador da empresa**
+- Gerencia a própria empresa.
+- Cadastra unidades.
+- Gerencia usuários.
+- Configura obrigações e alertas.
+
+**Gestor ambiental**
+- Gerencia documentos.
+- Controla licenças.
+- Gerencia condicionantes.
+- Acompanha obrigações.
+
+**Colaborador**
+- Consulta informações.
+- Envia documentos.
+- Executa tarefas atribuídas.
+
+**Consultor externo**
+- Acessa empresas que autorizaram seu vínculo.
+- Consulta documentos permitidos.
+- Realiza análises.
+- Registra pareceres e recomendações.
+
+Implementar permissões granulares por módulo e unidade.
+
+# 21. CONFIGURAÇÕES
+
+Criar área para:
+- Dados da empresa.
+- Unidades.
+- Usuários.
+- Permissões.
+- Categorias documentais.
+- Configurações de alertas.
+- Modelos de e-mail.
+- Responsáveis.
+- Integrações.
+- Histórico de atividades.
+- Preferências do sistema.
+
+# 22. EXPERIÊNCIA DO USUÁRIO
+
+O sistema deve ser extremamente intuitivo.
+
+Priorizar:
+- Cadastro simples.
+- Formulários organizados.
+- Campos com instruções.
+- Mensagens claras.
+- Filtros rápidos.
+- Pesquisa global.
+- Upload por arrastar e soltar.
+- Visualização de arquivos.
+- Indicadores de status.
+- Confirmação de operações críticas.
+
+Criar um onboarding inicial para novos clientes.
+
+Quando uma empresa acessar pela primeira vez, o sistema deverá orientar o cadastro de:
+1. Dados da empresa.
+2. Unidades.
+3. Atividades.
+4. Órgãos ambientais.
+5. Licenças vigentes.
+6. Documentos existentes.
+7. Responsáveis.
+8. Configurações de alertas.
+
+# 23. SEGURANÇA E CONFIABILIDADE
+
+Implementar:
+- Isolamento multi-tenant.
+- Autenticação segura.
+- Hash de senhas.
+- Controle de sessão.
+- Validação no backend.
+- Proteção contra acesso indevido.
+- Logs de auditoria.
+- Backup do banco.
+- Armazenamento privado.
+- URLs temporárias para arquivos.
+- Limitação de tentativas de login.
+- Proteção contra upload de arquivos maliciosos.
+- Registro de alterações importantes.
+
+Documentos ambientais podem conter informações empresariais confidenciais. Não permitir acesso público aos arquivos.
+
+# 24. ESTRUTURA DO BANCO DE DADOS
+
+Planejar tabelas relacionais para:
+
+- Empresas.
+- Unidades.
+- Usuários.
+- Permissões.
+- Documentos.
+- Versões documentais.
+- Licenças.
+- Condicionantes.
+- Obrigações.
+- Resíduos.
+- MTR.
+- CDF.
+- Destinadores.
+- Transportadores.
+- Registros IBAMA.
+- TCFA.
+- RAPP.
+- Monitoramentos.
+- Auditorias.
+- Inspeções.
+- Planos de ação.
+- Tarefas.
+- Alertas.
+- Destinatários.
+- Histórico de e-mails.
+- Conversas com IA.
+- Histórico de atividades.
+
+Utilizar relacionamentos adequados, índices, restrições e integridade referencial.
+
+# 25. DESENVOLVIMENTO EM ETAPAS
+
+Não tente desenvolver todas as integrações complexas de uma vez.
+
+Priorize a entrega de uma plataforma funcional.
+
+**FASE 1 – Fundação**
+- Arquitetura.
+- Banco de dados.
+- Autenticação.
+- Multiempresa.
+- Cadastro de unidades.
+- Layout principal.
+- Dashboard.
+
+**FASE 2 – Gestão documental**
+- Upload.
+- Armazenamento.
+- Classificação.
+- Datas de vencimento.
+- Histórico.
+- Visualização.
+
+**FASE 3 – Gestão ambiental**
+- Licenças.
+- Condicionantes.
+- Obrigações.
+- Resíduos.
+- MTR e CDF.
+- IBAMA.
+- Monitoramentos.
+- Auditorias.
+- Planos de ação.
+
+**FASE 4 – Automação**
+- Calendário.
+- Alertas.
+- Envio real de e-mails.
+- Histórico de notificações.
+- Tarefas automáticas.
+
+**FASE 5 – Inteligência artificial**
+- Leitura de documentos.
+- Extração de informações.
+- Assistente ambiental.
+- Pesquisa documental.
+- Identificação de pendências.
+- Geração de checklists.
+
+**FASE 6 – Comercialização**
+- Planos de assinatura.
+- Controle de licenças de uso.
+- Limites por plano.
+- Gestão de assinaturas.
+- Painel administrativo da plataforma.
+
+# 26. DIRETRIZES OBRIGATÓRIAS
+
+1. Desenvolver funcionalidades reais, não apenas telas ilustrativas.
+2. Não criar botões sem funcionalidade.
+3. Não simular envio de e-mail como se fosse real.
+4. Não simular processamento de IA sem integração.
+5. Não utilizar dados fictícios como se fossem dados reais.
+6. Não deixar informações de empresas acessíveis entre diferentes contas.
+7. Não armazenar documentos apenas localmente.
+8. Não inventar obrigações legais.
+9. Não permitir transmissão oficial sem autorização humana.
+10. Não criar dependência de um único fornecedor de IA.
+11. Documentar as integrações e variáveis de ambiente.
+12. Criar migrations e instruções de instalação.
+13. Testar os principais fluxos.
+14. Corrigir erros de compilação.
+15. Garantir responsividade.
+
+Se alguma integração depender de credenciais externas, preparar sua estrutura e indicar claramente quais credenciais são necessárias.
+
+# RESULTADO ESPERADO
+
+Entregar uma plataforma SaaS profissional, funcional e escalável, que permita a uma empresa administrar praticamente toda sua rotina ambiental em um único ambiente.
+
+O grande diferencial do VERDANT CONTROL deverá ser a combinação de:
+
+**GESTÃO DOCUMENTAL + INTELIGÊNCIA ARTIFICIAL + CONTROLE DE OBRIGAÇÕES + AUTOMAÇÃO DE ALERTAS.**
+
+O sistema não deve ser apenas um arquivo digital de documentos. Ele deve orientar o usuário sobre o que precisa ser feito, quando precisa ser feito, quais documentos são necessários e quais pendências precisam ser resolvidas.
+
+Comece pela arquitetura e pela Fase 1. Após concluir cada fase, teste o funcionamento antes de avançar. Preserve o código e as funcionalidades já implementadas.
