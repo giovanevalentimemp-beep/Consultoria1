@@ -1,0 +1,667 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+paths:
+  /control/me:
+    get:
+      operationId: getControlMe
+      responses:
+        "200":
+          description: Sessão e empresas autorizadas
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ControlMe" }
+  /control/companies:
+    post:
+      operationId: createControlCompany
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CompanyInput" }
+      responses:
+        "201":
+          description: Empresa cadastrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ControlCompany" }
+  /control/{companyId}/overview:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+    get:
+      operationId: getControlOverview
+      responses:
+        "200":
+          description: Indicadores reais e próximas atividades
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ControlOverview" }
+  /control/{companyId}/company:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+    patch:
+      operationId: updateControlCompany
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CompanyInput" }
+      responses:
+        "200":
+          description: Empresa atualizada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ControlCompany" }
+  /control/{companyId}/records:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+    get:
+      operationId: listControlRecords
+      parameters:
+        - { name: kind, in: query, schema: { type: string } }
+        - { name: unitId, in: query, schema: { type: string } }
+        - { name: search, in: query, schema: { type: string } }
+      responses:
+        "200":
+          description: Registros autorizados
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ControlRecord" }
+    post:
+      operationId: createControlRecord
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RecordInput" }
+      responses:
+        "201":
+          description: Registro cadastrado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ControlRecord" }
+  /control/{companyId}/records/{id}:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+      - { $ref: "#/components/parameters/Id" }
+    patch:
+      operationId: updateControlRecord
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RecordInput" }
+      responses:
+        "200":
+          description: Registro atualizado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ControlRecord" }
+    delete:
+      operationId: deleteControlRecord
+      responses:
+        "204": { description: Registro arquivado }
+  /control/{companyId}/uploads:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+    post:
+      operationId: requestControlUpload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UploadInput" }
+      responses:
+        "201":
+          description: Upload privado autorizado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UploadTicket" }
+  /control/{companyId}/documents:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+    get:
+      operationId: listControlDocuments
+      responses:
+        "200":
+          description: Documentos e versões autorizados
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ControlDocument" }
+    post:
+      operationId: completeControlUpload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DocumentInput" }
+      responses:
+        "201":
+          description: Documento persistido após verificação do arquivo
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ControlDocument" }
+  /control/{companyId}/documents/{id}:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+      - { $ref: "#/components/parameters/Id" }
+    patch:
+      operationId: updateControlDocument
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DocumentMetadata" }
+      responses:
+        "200":
+          description: Metadados atualizados
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ControlDocument" }
+  /control/{companyId}/documents/{id}/download:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+      - { $ref: "#/components/parameters/Id" }
+    get:
+      operationId: getControlDownload
+      responses:
+        "200":
+          description: URL privada temporária, expira em 60 segundos
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DownloadLink" }
+  /control/{companyId}/documents/{id}/analyze:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+      - { $ref: "#/components/parameters/Id" }
+    post:
+      operationId: analyzeControlDocument
+      responses:
+        "202":
+          description: Análise enfileirada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ControlDocument" }
+  /control/{companyId}/documents/{id}/validate:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+      - { $ref: "#/components/parameters/Id" }
+    post:
+      operationId: validateControlDocument
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ValidationInput" }
+      responses:
+        "200":
+          description: Revisão humana registrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ControlDocument" }
+  /control/{companyId}/alerts:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+    get:
+      operationId: listControlAlerts
+      responses:
+        "200":
+          description: Regras individuais
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ControlAlert" }
+    post:
+      operationId: saveControlAlert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AlertInput" }
+      responses:
+        "200":
+          description: Regra salva
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ControlAlert" }
+  /control/{companyId}/alerts/{id}/test:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+      - { $ref: "#/components/parameters/Id" }
+    post:
+      operationId: testControlAlert
+      responses:
+        "202":
+          description: Envio real de teste enfileirado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ControlMessage" }
+  /control/{companyId}/notifications:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+    get:
+      operationId: listControlNotifications
+      responses:
+        "200":
+          description: Histórico de e-mails
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ControlNotification" }
+  /control/{companyId}/members:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+    get:
+      operationId: listControlMembers
+      responses:
+        "200":
+          description: Pessoas autorizadas
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ControlMember" }
+    post:
+      operationId: saveControlMember
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MemberInput" }
+      responses:
+        "200":
+          description: Vínculo salvo pelo administrador
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ControlMember" }
+  /control/{companyId}/activity:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+    get:
+      operationId: listControlActivity
+      responses:
+        "200":
+          description: Auditoria de alterações
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ControlActivity" }
+  /control/{companyId}/chat:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+    get:
+      operationId: listControlChat
+      responses:
+        "200":
+          description: Histórico particular do usuário
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ChatMessage" }
+    post:
+      operationId: sendControlChat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ChatInput" }
+      responses:
+        "200":
+          description: Resposta fundamentada em registros autorizados
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ChatMessage" }
+  /control/{companyId}/integrations:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+    get:
+      operationId: getControlIntegrations
+      responses:
+        "200":
+          description: Estado de configuração sem segredos
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/IntegrationStatus" }
+    patch:
+      operationId: updateControlIntegrations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/EmailSettings" }
+      responses:
+        "200":
+          description: Remetente validado e configurações salvas
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/IntegrationStatus" }
+  /control/{companyId}/reports/{format}:
+    parameters:
+      - { $ref: "#/components/parameters/CompanyId" }
+      - { name: format, in: path, required: true, schema: { type: string, enum: [pdf, xlsx] } }
+      - { name: kind, in: query, schema: { type: string } }
+    get:
+      operationId: exportControlReport
+      responses:
+        "200":
+          description: Relatório em arquivo
+          content:
+            application/octet-stream:
+              schema: { type: string, format: binary }
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+components:
+  parameters:
+    CompanyId: { name: companyId, in: path, required: true, schema: { type: string } }
+    Id: { name: id, in: path, required: true, schema: { type: string } }
+  schemas:
+    JsonData:
+      type: object
+      additionalProperties: true
+    CompanyInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 200 }
+        data: { $ref: "#/components/schemas/JsonData" }
+    ControlCompany:
+      allOf:
+        - { $ref: "#/components/schemas/CompanyInput" }
+        - type: object
+          required: [id, role]
+          properties:
+            id: { type: string }
+            role: { type: string }
+    ControlMe:
+      type: object
+      required: [userId, email, platformAdmin, companies]
+      properties:
+        userId: { type: string }
+        email: { type: string }
+        platformAdmin: { type: boolean }
+        companies:
+          type: array
+          items: { $ref: "#/components/schemas/ControlCompany" }
+    RecordInput:
+      type: object
+      required: [kind, title]
+      properties:
+        kind: { type: string, enum: [unit, license, condition, obligation, waste, mtr, cdf, supplier, ibama, tcfa, rapp, monitoring, audit, action, task, requirement] }
+        title: { type: string, minLength: 2, maxLength: 300 }
+        description: { type: string, maxLength: 30000 }
+        status: { type: string, maxLength: 80 }
+        unitId: { type: [string, "null"] }
+        responsible: { type: string, maxLength: 200 }
+        dueDate: { type: [string, "null"], format: date }
+        parentId: { type: [string, "null"] }
+        documentId: { type: [string, "null"] }
+        relatedIds:
+          type: array
+          items: { type: string }
+        data: { $ref: "#/components/schemas/JsonData" }
+    ControlRecord:
+      allOf:
+        - { $ref: "#/components/schemas/RecordInput" }
+        - type: object
+          required: [id, companyId, createdAt, updatedAt]
+          properties:
+            id: { type: string }
+            companyId: { type: string }
+            createdAt: { type: string }
+            updatedAt: { type: string }
+    DocumentMetadata:
+      type: object
+      required: [name, category]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 300 }
+        category: { type: string, maxLength: 100 }
+        unitId: { type: [string, "null"] }
+        responsible: { type: string, maxLength: 200 }
+        number: { type: string, maxLength: 200 }
+        issuedAt: { type: [string, "null"], format: date }
+        expiresAt: { type: [string, "null"], format: date }
+        notes: { type: string, maxLength: 20000 }
+    UploadInput:
+      type: object
+      required: [filename, size, contentType]
+      properties:
+        filename: { type: string, minLength: 1, maxLength: 200 }
+        size: { type: integer, minimum: 1, maximum: 20971520 }
+        contentType: { type: string }
+        unitId: { type: [string, "null"] }
+    UploadTicket:
+      type: object
+      required: [uploadId, uploadUrl]
+      properties:
+        uploadId: { type: string }
+        uploadUrl: { type: string }
+    DocumentInput:
+      allOf:
+        - { $ref: "#/components/schemas/DocumentMetadata" }
+        - type: object
+          required: [uploadId]
+          properties:
+            uploadId: { type: string }
+            replacesId: { type: [string, "null"] }
+    ExtractedCondition:
+      type: object
+      required: [text, source, page]
+      properties:
+        text: { type: string }
+        source: { type: string }
+        page: { type: integer }
+        dueDate: { type: [string, "null"] }
+        frequency: { type: [string, "null"] }
+        evidence: { type: string }
+    DocumentAnalysis:
+      type: object
+      required: [summary, conditions]
+      properties:
+        summary: { type: string }
+        category: { type: [string, "null"] }
+        number: { type: [string, "null"] }
+        issuer: { type: [string, "null"] }
+        issuedAt: { type: [string, "null"] }
+        expiresAt: { type: [string, "null"] }
+        missingDocuments:
+          type: array
+          items: { type: string }
+        conditions:
+          type: array
+          items: { $ref: "#/components/schemas/ExtractedCondition" }
+    ControlDocument:
+      allOf:
+        - { $ref: "#/components/schemas/DocumentMetadata" }
+        - type: object
+          required: [id, companyId, filename, contentType, size, version, status, createdAt]
+          properties:
+            id: { type: string }
+            companyId: { type: string }
+            filename: { type: string }
+            contentType: { type: string }
+            size: { type: integer }
+            version: { type: integer }
+            previousId: { type: [string, "null"] }
+            status: { type: string }
+            error: { type: [string, "null"] }
+            analysis:
+              anyOf:
+                - { $ref: "#/components/schemas/DocumentAnalysis" }
+                - { type: "null" }
+            createdAt: { type: string }
+    ValidationInput:
+      type: object
+      required: [decision, conditions]
+      properties:
+        decision: { type: string, enum: [accept, reject] }
+        metadata: { $ref: "#/components/schemas/DocumentMetadata" }
+        conditions:
+          type: array
+          items: { $ref: "#/components/schemas/ExtractedCondition" }
+    DownloadLink:
+      type: object
+      required: [url]
+      properties:
+        url: { type: string }
+    AlertInput:
+      type: object
+      required: [targetType, targetId, offsets, recipients]
+      properties:
+        id: { type: string }
+        targetType: { type: string, enum: [document, record] }
+        targetId: { type: string }
+        offsets:
+          type: array
+          items: { type: integer, minimum: 0, maximum: 3650 }
+        recipients:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items: { type: string, format: email }
+        cc:
+          type: array
+          maxItems: 20
+          items: { type: string, format: email }
+        frequency: { type: string, enum: [once, daily, weekly] }
+        responsible: { type: string }
+        subject: { type: string, maxLength: 300 }
+        message: { type: string, maxLength: 5000 }
+        enabled: { type: boolean }
+    ControlAlert:
+      allOf:
+        - { $ref: "#/components/schemas/AlertInput" }
+        - type: object
+          required: [id, companyId]
+          properties:
+            id: { type: string }
+            companyId: { type: string }
+    ControlNotification:
+      type: object
+      required: [id, targetTitle, recipient, status, createdAt]
+      properties:
+        id: { type: string }
+        targetTitle: { type: string }
+        recipient: { type: string }
+        status: { type: string }
+        providerId: { type: [string, "null"] }
+        error: { type: [string, "null"] }
+        sentAt: { type: [string, "null"] }
+        createdAt: { type: string }
+    MemberInput:
+      type: object
+      required: [email, role, unitIds, modules, enabled]
+      properties:
+        email: { type: string, format: email }
+        role: { type: string, enum: [company_admin, manager, collaborator, consultant] }
+        unitIds:
+          type: array
+          items: { type: string }
+        modules:
+          type: array
+          items: { type: string }
+        enabled: { type: boolean }
+    ControlMember:
+      allOf:
+        - { $ref: "#/components/schemas/MemberInput" }
+        - type: object
+          required: [id]
+          properties:
+            id: { type: string }
+    ControlActivity:
+      type: object
+      required: [id, actor, action, entity, createdAt]
+      properties:
+        id: { type: string }
+        actor: { type: string }
+        action: { type: string }
+        entity: { type: string }
+        createdAt: { type: string }
+    ChatInput:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string, minLength: 1, maxLength: 6000 }
+    ChatMessage:
+      type: object
+      required: [id, role, content, createdAt]
+      properties:
+        id: { type: string }
+        role: { type: string, enum: [user, assistant] }
+        content: { type: string }
+        createdAt: { type: string }
+    ControlMessage:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }
+    IntegrationStatus:
+      type: object
+      required: [storage, ai, email, sender, workerLastRun]
+      properties:
+        storage: { type: boolean }
+        ai: { type: boolean }
+        email: { type: boolean }
+        sender: { type: string }
+        workerLastRun: { type: [string, "null"] }
+        notice: { type: string }
+    EmailSettings:
+      type: object
+      required: [sender]
+      properties:
+        sender: { type: string, format: email }
+    ControlOverview:
+      type: object
+      required: [counts, attention, byCategory, timeline]
+      properties:
+        counts: { $ref: "#/components/schemas/JsonData" }
+        attention:
+          type: array
+          items: { $ref: "#/components/schemas/ControlRecord" }
+        byCategory:
+          type: array
+          items: { $ref: "#/components/schemas/CountItem" }
+        timeline:
+          type: array
+          items: { $ref: "#/components/schemas/CountItem" }
+    CountItem:
+      type: object
+      required: [name, value]
+      properties:
+        name: { type: string }
+        value: { type: number }
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
