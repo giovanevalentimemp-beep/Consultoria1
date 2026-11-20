@@ -2,6 +2,7 @@ import { type ReactNode, useEffect, useRef } from "react";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { ClerkProvider, Show, SignIn, SignUp, useClerk } from "@clerk/react";
 import { publishableKeyFromHost } from "@clerk/react/internal";
+import { ptBR } from "@clerk/localizations";
 import { shadcn } from "@clerk/themes";
 import { Redirect, Route, Switch, useLocation, Router as WouterRouter } from "wouter";
 import { ErrorBoundary } from "@/components/error-boundary";
@@ -79,7 +80,7 @@ const clerkAppearance = {
     formFieldSuccessText: "text-[#1F6A43]",
     alertText: "text-[#7E2A22]",
     socialButtonsBlockButton: "border-[#194D36]/15",
-    formButtonPrimary: "bg-[#194D36] hover:bg-[#123a29]",
+    formButtonPrimary: "bg-[#194D36] text-white font-semibold hover:bg-[#123a29]",
     formFieldInput: "border-[#194D36]/15 text-[#194D36]",
     dividerLine: "bg-[#194D36]/10",
     alert: "border-red-200 bg-red-50",
@@ -243,14 +244,19 @@ function ClerkProviderWithRoutes() {
       signInUrl={`${basePath}/sign-in`}
       signUpUrl={`${basePath}/sign-up`}
       localization={{
+        ...ptBR,
         signIn: {
+          ...ptBR.signIn,
           start: {
+            ...(ptBR.signIn?.start ?? {}),
             title: "Acesse o VERDANT CONTROL",
             subtitle: "Entre para continuar na sua área ambiental.",
           },
         },
         signUp: {
+          ...ptBR.signUp,
           start: {
+            ...(ptBR.signUp?.start ?? {}),
             title: "Crie seu acesso",
             subtitle: "Cadastre-se para entrar no VERDANT CONTROL.",
           },

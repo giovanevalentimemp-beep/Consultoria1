@@ -13,7 +13,7 @@ router.post("/:companyId/uploads",async(req,res)=>{
   const a=await access(req);allowed(a,"documents",true);const d=RequestControlUploadBody.parse(req.body);
   if(!types.has(d.contentType)) fail(400,"Formato permitido: PDF, PNG, JPEG, XLSX, CSV ou ZIP.");
   await validateUnit(a,d.unitId??null);
-  if(!process.env.PRIVATE_OBJECT_DIR) fail(503,"Armazenamento privado não configurado neste ambiente. O envio de arquivos está indisponível.");
+  if(!process.env.PRIVATE_OBJECT_DIR) { res.status(503).json({error:"Armazenamento privado não configurado neste ambiente. O envio de arquivos está indisponível."});return; }
   const uploadUrl=await storage.getObjectEntityUploadURL();
   const objectPath=storage.normalizeObjectEntityPath(uploadUrl);
   const r=await pool.query("INSERT INTO vc_uploads(company_id,user_id,object_path,filename,content_type,size,unit_id) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id",[a.companyId,a.userId,objectPath,d.filename,d.contentType,d.size,d.unitId??null]);
@@ -72,6 +72,7 @@ router.patch("/:companyId/documents/:id",async(req,res)=>{
 });
 router.get("/:companyId/documents/:id/download",async(req,res)=>{
   const a=await access(req);const doc=await documentById(a,req.params.id as string);
+  if(!process.env.PRIVATE_OBJECT_DIR) { res.status(503).json({error:"Armazenamento privado não configurado neste ambiente. O download de arquivos está indisponível."});return; }
   const file=await storage.getObjectEntityFile(doc.object_path);
   const response=await fetch("http://127.0.0.1:1106/object-storage/signed-object-url",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({bucket_name:file.bucket.name,object_name:file.name,method:"GET",expires_at:new Date(Date.now()+60_000).toISOString()})});
   if(!response.ok)fail(503,"Não foi possível gerar o link de download.");
@@ -111,7 +112,14 @@ router.post("/:companyId/documents/:id/validate",async(req,res)=>{
       if(old)await client.query("UPDATE vc_records SET title=$2,description=$3,due_date=$4,data=$5,responsible=$6,status='Aberta',updated_at=now() WHERE id=$1",[old.id,...args]);
       else await client.query("INSERT INTO vc_records(company_id,document_id,unit_id,created_by,kind,status,title,description,due_date,data,responsible) VALUES($1,$2,$3,$4,'condition','Aberta',$5,$6,$7,$8,$9)",[a.companyId,doc.id,doc.unit_id,a.userId,...args]);
     }
-    const metadata=d.metadata??{};
+    const metadata=(d.metadata??{}) as Partial<{
+      name:string;
+      category:string;
+      number:string;
+      responsible:string;
+      issuedAt:string|null;
+      expiresAt:string|null;
+    }>;
     const r=await client.query("UPDATE vc_documents SET status=$2,name=$3,category=$4,number=$5,responsible=$6,issued_at=$7,expires_at=$8 WHERE id=$1 RETURNING *",[doc.id,accept?"Validado":"Rejeitado",metadata.name??doc.name,metadata.category??doc.category,metadata.number??doc.number,metadata.responsible??doc.responsible,cleanDate(metadata.issuedAt??doc.issued_at),cleanDate(metadata.expiresAt??doc.expires_at)]);
     await client.query("COMMIT");await audit(a,accept?"Validou extração documental":"Rejeitou extração documental",doc.name,doc.unit_id,"documents");
     res.json(ValidateControlDocumentResponse.parse(publicDoc(r.rows[0])));

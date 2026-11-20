@@ -39,7 +39,7 @@ export function PlatformProvider({ children }: { children: ReactNode }) {
 
   if (me.isLoading) return <ShellSkeleton />;
   if (me.isError || !me.data) return <div className="min-h-[100dvh] grid place-items-center p-6 bg-[#F5F9F6]"><ErrorState error={me.error} onRetry={() => me.refetch()} /></div>;
-  if (!company) return <Onboarding />;
+  if (!company) return <Onboarding me={me.data} />;
 
   return (
     <UnitLoader companyId={company.id}>
