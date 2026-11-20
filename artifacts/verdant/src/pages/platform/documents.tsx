@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type DragEvent, type FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Check, Download, FileText, History, Loader2, Plus, RefreshCw, Sparkles, Trash2, Upload, X } from "lucide-react";
+import { Check, Download, FileText, History, Loader2, Plus, RefreshCw, Trash2, Upload, X } from "lucide-react";
 import {
-  getGetControlDownloadQueryKey, useAnalyzeControlDocument, useCompleteControlUpload, useGetControlDownload, useListControlDocuments,
+  getGetControlDownloadQueryKey, useCompleteControlUpload, useGetControlDownload, useListControlDocuments,
   useRequestControlUpload, useUpdateControlDocument, useValidateControlDocument, type ControlDocument, type DocumentMetadata, type ExtractedCondition,
 } from "@workspace/api-client-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -75,7 +75,7 @@ function UploadDialog({ open, onOpenChange, replaces }: { open: boolean; onOpenC
       setStage("complete");
       await complete.mutateAsync({ companyId, data: { ...meta, name: meta.name.trim(), uploadId: ticket.uploadId, replacesId: replaces?.id ?? null } });
       invalidateCompany(qc, companyId);
-      toast({ title: replaces ? "Nova versão registrada" : "Documento enviado", description: "Use \"Analisar com IA\" para extrair datas e condicionantes." });
+      toast({ title: replaces ? "Nova versão registrada" : "Documento enviado" });
       onOpenChange(false);
     } catch (x) { setErr(errMsg(x)); } finally { setStage("idle"); }
   };
@@ -170,7 +170,6 @@ function DocSheet({ doc, all, onClose, onReplace }: { doc: ControlDocument | nul
   const [meta, setMeta] = useState<DocumentMetadata | null>(null);
   const [tab, setTab] = useState<"review" | "meta" | "versions">("meta");
   const update = useUpdateControlDocument();
-  const analyze = useAnalyzeControlDocument();
   useEffect(() => {
     if (!doc) return;
     setMeta({ name: doc.name, category: doc.category, unitId: doc.unitId ?? null, responsible: doc.responsible, number: doc.number, issuedAt: doc.issuedAt ?? null, expiresAt: doc.expiresAt ?? null, notes: doc.notes });
@@ -186,7 +185,7 @@ function DocSheet({ doc, all, onClose, onReplace }: { doc: ControlDocument | nul
     return chain;
   }, [doc, all]);
   if (!doc) return null;
-  const busy = isDocBusy(doc.status) || analyze.isPending;
+  const busy = isDocBusy(doc.status);
   return (
     <Sheet open={!!doc} onOpenChange={(o) => !o && onClose()}>
       <SheetContent className="w-full overflow-y-auto sm:max-w-2xl bg-white">
@@ -194,7 +193,7 @@ function DocSheet({ doc, all, onClose, onReplace }: { doc: ControlDocument | nul
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <Pill tone={isDocBusy(doc.status) ? "info" : toneFor(doc.status)}>{docStatusLabel[doc.status] ?? doc.status}</Pill>
           <DownloadButton doc={doc} />
-          <button disabled={busy} onClick={() => analyze.mutate({ companyId, id: doc.id }, { onSuccess: () => { invalidateCompany(qc, companyId); toast({ title: "Análise iniciada", description: "O status atualiza automaticamente." }); }, onError: (e) => toast({ title: "Falha ao iniciar análise", description: errMsg(e), variant: "destructive" }) })} className={btnClass("primary", "py-2 px-4 text-[13px] disabled:opacity-60")} data-testid="button-analyze">{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}{busy ? "Analisando..." : doc.analysis ? "Reanalisar com IA" : "Analisar com IA"}</button>
+          <span className="rounded-full bg-[#F5F9F6] px-3 py-2 text-[12px] font-semibold text-[#58645D]" role="status">Análise automática pausada</span>
           <button onClick={() => onReplace(doc)} className={btnClass("outline", "py-2 px-4 text-[13px]")} data-testid="button-replace"><RefreshCw className="h-4 w-4" />Substituir arquivo</button>
         </div>
         {doc.error && <p role="alert" className="mt-3 rounded-lg bg-[#FBE7E4] px-3 py-2 text-[13px] text-[#7E2A22]">{doc.error}</p>}
@@ -226,7 +225,7 @@ export default function DocumentsPage() {
   const unitName = (id?: string | null) => units.find((u) => u.id === id)?.title ?? "Empresa";
   return (
     <div>
-      <PageHeader eyebrow="Acervo" title="Documentos" intro="Upload para armazenamento privado, leitura assistida por IA e validação humana antes de qualquer registro legal." actions={<button onClick={() => { setReplaces(null); setUploadOpen(true); }} className={btnClass("primary", "py-2.5 px-5")} data-testid="button-open-upload"><Upload className="h-4 w-4" />Enviar documento</button>} />
+      <PageHeader eyebrow="Acervo" title="Documentos" intro="Cadastre, classifique e acompanhe os documentos ambientais, seus responsáveis e prazos de validade." actions={<button onClick={() => { setReplaces(null); setUploadOpen(true); }} className={btnClass("primary", "py-2.5 px-5")} data-testid="button-open-upload"><Upload className="h-4 w-4" />Enviar documento</button>} />
       <Panel>
         <div className="flex flex-wrap gap-2 border-b border-[#194D36]/8 p-3.5">
           <SearchInput value={search} onChange={setSearch} placeholder="Buscar por nome, número ou arquivo" />
@@ -235,7 +234,7 @@ export default function DocumentsPage() {
           <div className="w-44"><NativeSelect value={period} onChange={setPeriod} options={[{ value: "90", label: "Vence em 90 dias" }, { value: "expired", label: "Vencidos" }, { value: "none", label: "Sem validade" }]} placeholder="Qualquer validade" /></div>
         </div>
         {q.isLoading ? <SkeletonRows /> : q.isError ? <div className="p-6"><ErrorState error={q.error} onRetry={() => q.refetch()} /></div> : !rows.length ? (
-          <EmptyState icon={<FileText className="h-5 w-5" />} title={all.length ? "Nenhum documento nos filtros" : "O acervo está vazio"} text={all.length ? "Ajuste os filtros acima." : "Comece pela licença de operação vigente: a IA identifica datas e condicionantes para você validar."} action={!all.length ? <button onClick={() => setUploadOpen(true)} className={btnClass("primary", "py-2.5 px-5")}><Upload className="h-4 w-4" />Enviar primeiro documento</button> : undefined} />
+          <EmptyState icon={<FileText className="h-5 w-5" />} title={all.length ? "Nenhum documento nos filtros" : "O acervo está vazio"} text={all.length ? "Ajuste os filtros acima." : "Registre documentos com categoria, unidade, responsável e validade para acompanhar o acervo."} action={!all.length ? <button onClick={() => setUploadOpen(true)} className={btnClass("primary", "py-2.5 px-5")}><Upload className="h-4 w-4" />Enviar primeiro documento</button> : undefined} />
         ) : (
           <ul className="divide-y divide-[#194D36]/6">
             {rows.map((d) => (

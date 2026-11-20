@@ -13,6 +13,7 @@ router.post("/:companyId/uploads",async(req,res)=>{
   const a=await access(req);allowed(a,"documents",true);const d=RequestControlUploadBody.parse(req.body);
   if(!types.has(d.contentType)) fail(400,"Formato permitido: PDF, PNG, JPEG, XLSX, CSV ou ZIP.");
   await validateUnit(a,d.unitId??null);
+  if(!process.env.PRIVATE_OBJECT_DIR) fail(503,"Armazenamento privado não configurado neste ambiente. O envio de arquivos está indisponível.");
   const uploadUrl=await storage.getObjectEntityUploadURL();
   const objectPath=storage.normalizeObjectEntityPath(uploadUrl);
   const r=await pool.query("INSERT INTO vc_uploads(company_id,user_id,object_path,filename,content_type,size,unit_id) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id",[a.companyId,a.userId,objectPath,d.filename,d.contentType,d.size,d.unitId??null]);
